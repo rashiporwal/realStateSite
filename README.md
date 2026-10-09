@@ -1,6 +1,6 @@
 # envSites
 
-A minimalist, Japanese-inspired real-estate experience for discovering and listing homes across India.
+A minimalist, editorial real-estate experience for discovering and listing homes across India.
 
 ## Run locally
 
@@ -28,4 +28,5 @@ Import the repository in Vercel. It will detect Vite automatically. Build comman
 - India city search with dynamic property results
 - Seller registration stored locally in the browser
 - Buy/sell enquiry flows
-- Lazy-loaded listing imagery and reduced-motion support
+- Saved shortlists, property detail views, and enquiry references
+- Motion-powered transitions with reduced-motion support
