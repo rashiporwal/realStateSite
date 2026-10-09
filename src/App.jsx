@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import {
   ArrowDownRight, ArrowRight, Bath, BedDouble, Building2, CalendarDays, Check,
   ChevronDown, ChevronRight, CircleCheckBig, Compass, FileCheck2, Heart, Home,
@@ -27,6 +27,12 @@ function Reveal({ children, className = '', delay = 0, as = 'div' }) {
   const reduce = useReducedMotion()
   const Component = motion[as]
   return <Component className={className} initial={reduce ? false : { opacity: 0, y: 28 }} whileInView={reduce ? {} : { opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: .68, delay, ease: easing }}>{children}</Component>
+}
+
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 110, damping: 28, restDelta: .001 })
+  return <motion.div className="scroll-progress" style={{ scaleX }} aria-hidden="true" />
 }
 
 function Brand() {
@@ -201,5 +207,5 @@ export default function App() {
   useEffect(() => { localStorage.setItem('envsites-saved', JSON.stringify(savedIds)) }, [savedIds])
   function handleSearch(request) { if (request.intent === 'Sell') { document.querySelector('#placed')?.scrollIntoView({ behavior: 'smooth' }); return } setSearchRequest({ ...request, requestId: Date.now() }); requestAnimationFrame(() => document.querySelector('#near-you')?.scrollIntoView({ behavior: 'smooth' })) }
   function handleEnquire(property) { setSelectedProperty(property); requestAnimationFrame(() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })) }
-  return <><Navbar dark={dark} setDark={setDark} savedCount={savedIds.length} /><main><Hero onSearch={handleSearch} /><About /><NearYou searchRequest={searchRequest} savedIds={savedIds} setSavedIds={setSavedIds} onEnquire={handleEnquire} /><HowItWorks /><Placed /><Contact selectedProperty={selectedProperty} clearSelectedProperty={() => setSelectedProperty(null)} /><FAQ /></main><Footer /></>
+  return <><ScrollProgress /><Navbar dark={dark} setDark={setDark} savedCount={savedIds.length} /><main><Hero onSearch={handleSearch} /><About /><NearYou searchRequest={searchRequest} savedIds={savedIds} setSavedIds={setSavedIds} onEnquire={handleEnquire} /><HowItWorks /><Placed /><Contact selectedProperty={selectedProperty} clearSelectedProperty={() => setSelectedProperty(null)} /><FAQ /></main><Footer /></>
 }
