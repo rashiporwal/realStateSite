@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import '@photo-sphere-viewer/core/index.css'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import {
   ArrowDownRight, ArrowRight, Bath, BedDouble, Building2, CalendarDays, Check,
   ChevronDown, ChevronRight, CircleCheckBig, Compass, FileCheck2, Heart, Home,
   KeyRound, Mail, MapPin, Menu, Moon, MoveUpRight, Phone, Ruler, Search,
-  ShieldCheck, Sparkles, Sun, Users, X,
+  Rotate3D, ShieldCheck, Sparkles, Sun, Users, X,
 } from 'lucide-react'
 
 const properties = [
-  { id: 1, city: 'Mumbai', area: 'Bandra West', name: 'Harbour View Residence', type: 'Apartment', price: '₹4.8 Cr', priceValue: 4.8, beds: 3, baths: 3, size: '1,860 sq ft', status: 'Ready to move', facing: 'West facing', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=78', description: 'A light-filled home with a generous balcony, private lift lobby and quiet interiors close to the waterfront.' },
+  { id: 1, city: 'Mumbai', area: 'Bandra West', name: 'Harbour View Residence', type: 'Apartment', price: '₹4.8 Cr', priceValue: 4.8, beds: 3, baths: 3, size: '1,860 sq ft', status: 'Ready to move', facing: 'West facing', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=78', panorama: `${import.meta.env.BASE_URL}harbour-view-360.jpg`, description: 'A light-filled home with a generous balcony, private lift lobby and quiet interiors close to the waterfront.' },
   { id: 2, city: 'Mumbai', area: 'Worli', name: 'Sea Glass Penthouse', type: 'Penthouse', price: '₹8.2 Cr', priceValue: 8.2, beds: 4, baths: 4, size: '2,740 sq ft', status: 'Newly listed', facing: 'Sea view', image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=78', description: 'Expansive city and sea views, calm natural finishes and flexible entertaining spaces across one private floor.' },
   { id: 3, city: 'Bengaluru', area: 'Indiranagar', name: 'Garden Court Villa', type: 'Villa', price: '₹3.6 Cr', priceValue: 3.6, beds: 4, baths: 4, size: '3,100 sq ft', status: 'Owner listed', facing: 'Garden view', image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=78', description: 'A private urban villa organised around a green courtyard, with a home office and independent guest suite.' },
   { id: 4, city: 'Bengaluru', area: 'Whitefield', name: 'Pine & Stone', type: 'Apartment', price: '₹1.9 Cr', priceValue: 1.9, beds: 3, baths: 2, size: '1,740 sq ft', status: 'Ready to move', facing: 'East facing', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=78', description: 'A practical family apartment with warm finishes, efficient storage and quick access to major work hubs.' },
@@ -102,11 +103,50 @@ function PropertyCard({ property, index, saved, onSave, onOpen }) {
   </motion.article>
 }
 
+function PanoramaViewer({ src, name }) {
+  const viewerRef = useRef(null)
+  const [status, setStatus] = useState('loading')
+
+  useEffect(() => {
+    let disposed = false
+    let viewer
+    setStatus('loading')
+
+    import('@photo-sphere-viewer/core').then(({ Viewer }) => {
+      if (disposed || !viewerRef.current) return
+      viewer = new Viewer({
+        container: viewerRef.current,
+        panorama: src,
+        navbar: ['zoom', 'move', 'fullscreen'],
+        defaultZoomLvl: 28,
+        mousewheelCtrlKey: true,
+        touchmoveTwoFingers: false,
+        lang: { loading: 'Preparing your 360° tour…' },
+      })
+      viewer.addEventListener('ready', () => !disposed && setStatus('ready'), { once: true })
+    }).catch(() => !disposed && setStatus('error'))
+
+    return () => { disposed = true; viewer?.destroy() }
+  }, [src])
+
+  return <div className="panorama-shell" aria-label={`Interactive 360 degree tour of ${name}`}>
+    <div className="panorama-viewer" ref={viewerRef} />
+    <AnimatePresence>{status === 'loading' && <motion.div className="panorama-loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.span animate={{ rotate: 360 }} transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}><Rotate3D /></motion.span><strong>Preparing 360° tour</strong><small>Loading the full room view…</small></motion.div>}</AnimatePresence>
+    {status === 'error' && <div className="panorama-loading panorama-error"><strong>Tour could not load</strong><small>Please try again on a WebGL-enabled browser.</small></div>}
+    {status === 'ready' && <motion.div className="panorama-hint" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .25 }}><Rotate3D size={15} /> Drag to look around · Pinch to zoom</motion.div>}
+  </div>
+}
+
 function PropertyModal({ property, onClose, saved, onSave, onEnquire }) {
+  const [tourOpen, setTourOpen] = useState(false)
   useEffect(() => { const close = e => e.key === 'Escape' && onClose(); window.addEventListener('keydown', close); return () => window.removeEventListener('keydown', close) }, [onClose])
   return <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={e => e.target === e.currentTarget && onClose()}>
     <motion.article className="property-modal" initial={{ opacity: 0, y: 50, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24, scale: .98 }} transition={{ duration: .35, ease: easing }} role="dialog" aria-modal="true" aria-label={`${property.name} details`}>
-      <button className="modal-close" onClick={onClose} aria-label="Close property details"><X /></button><div className="modal-image"><img src={property.image} alt={property.name} /><span>{property.status}</span></div>
+      <button className="modal-close" onClick={onClose} aria-label="Close property details"><X /></button><div className={`modal-image${tourOpen ? ' tour-active' : ''}`}>
+        <AnimatePresence mode="wait">{tourOpen && property.panorama ? <motion.div className="panorama-layer" key="panorama" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .28 }}><PanoramaViewer src={property.panorama} name={property.name} /></motion.div> : <motion.img key="photo" src={property.image} alt={property.name} initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: .28 }} />}</AnimatePresence>
+        <span className="status-pill">{tourOpen ? 'Interactive tour' : property.status}</span>
+        {property.panorama && <motion.button whileTap={{ scale: .95 }} className="tour-toggle" onClick={() => setTourOpen(current => !current)} aria-pressed={tourOpen}><Rotate3D size={17} /> {tourOpen ? 'Exit 360°' : 'View 360°'}</motion.button>}
+      </div>
       <div className="modal-content"><div className="modal-title"><div><span>{property.area}, {property.city}</span><h2>{property.name}</h2></div><strong>{property.price}</strong></div><p>{property.description}</p>
         <div className="modal-facts"><div><BedDouble /><span>Bedrooms<strong>{property.beds}</strong></span></div><div><Bath /><span>Bathrooms<strong>{property.baths}</strong></span></div><div><Ruler /><span>Built-up area<strong>{property.size}</strong></span></div><div><Compass /><span>Aspect<strong>{property.facing}</strong></span></div></div>
         <div className="modal-note"><ShieldCheck /><p><strong>Before you visit</strong><br />A property advisor will confirm availability, ownership details and the exact meeting point.</p></div>
