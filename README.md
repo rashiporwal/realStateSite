@@ -4,10 +4,6 @@ envSites is a modern real-estate discovery experience designed for people lookin
 
 The project focuses on clarity, calm visuals, useful property information, and a smoother journey from the first search to a viewing request. Its warm editorial design combines minimal layouts, subtle glass effects, responsive motion, and carefully balanced light and dark themes.
 
-## Live experience
-
-[Visit envSites](https://rashiporwal.github.io/realStateSite/)
-
 ## What visitors can do
 
 - Search for homes by Indian city, property type, and budget.
@@ -18,6 +14,10 @@ The project focuses on clarity, calm visuals, useful property information, and a
 - Register a property for sale and receive a listing reference.
 - Contact the team for buying as well as selling requirements.
 - Switch between light and dark modes with the preference remembered locally.
+
+## Live experience
+
+[Visit envSites](https://rashiporwal.github.io/realStateSite/)
 
 ## 360° property experience
 
@@ -58,6 +58,4 @@ The project can also be hosted on services that support standard static-site dep
 
 The current property catalogue is demonstration content. Saved homes, enquiry references, and seller submissions are retained in the visitor's browser for the prototype experience. A production launch should connect these flows to authenticated storage, verified property records, and a secure customer-management system.
 
-## Credits
 
-Designed by **Rashi Porwal**.
