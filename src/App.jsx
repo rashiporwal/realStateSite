@@ -8,8 +8,14 @@ import {
   Rotate3D, ShieldCheck, Sparkles, Sun, Users, X,
 } from 'lucide-react'
 
+const panoramaSlugs = ['harbour-view', 'sea-glass', 'garden-court', 'pine-stone', 'banyan-grove', 'linear-house', 'quiet-palm', 'terra-house', 'casa-verde']
+const panoramaSources = slug => ({
+  desktop: `${import.meta.env.BASE_URL}panoramas/${slug}-desktop.jpg`,
+  mobile: `${import.meta.env.BASE_URL}panoramas/${slug}-mobile.jpg`,
+})
+
 const properties = [
-  { id: 1, city: 'Mumbai', area: 'Bandra West', name: 'Harbour View Residence', type: 'Apartment', price: '₹4.8 Cr', priceValue: 4.8, beds: 3, baths: 3, size: '1,860 sq ft', status: 'Ready to move', facing: 'West facing', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=78', panorama: `${import.meta.env.BASE_URL}harbour-view-360.jpg`, description: 'A light-filled home with a generous balcony, private lift lobby and quiet interiors close to the waterfront.' },
+  { id: 1, city: 'Mumbai', area: 'Bandra West', name: 'Harbour View Residence', type: 'Apartment', price: '₹4.8 Cr', priceValue: 4.8, beds: 3, baths: 3, size: '1,860 sq ft', status: 'Ready to move', facing: 'West facing', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=78', description: 'A light-filled home with a generous balcony, private lift lobby and quiet interiors close to the waterfront.' },
   { id: 2, city: 'Mumbai', area: 'Worli', name: 'Sea Glass Penthouse', type: 'Penthouse', price: '₹8.2 Cr', priceValue: 8.2, beds: 4, baths: 4, size: '2,740 sq ft', status: 'Newly listed', facing: 'Sea view', image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=78', description: 'Expansive city and sea views, calm natural finishes and flexible entertaining spaces across one private floor.' },
   { id: 3, city: 'Bengaluru', area: 'Indiranagar', name: 'Garden Court Villa', type: 'Villa', price: '₹3.6 Cr', priceValue: 3.6, beds: 4, baths: 4, size: '3,100 sq ft', status: 'Owner listed', facing: 'Garden view', image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=78', description: 'A private urban villa organised around a green courtyard, with a home office and independent guest suite.' },
   { id: 4, city: 'Bengaluru', area: 'Whitefield', name: 'Pine & Stone', type: 'Apartment', price: '₹1.9 Cr', priceValue: 1.9, beds: 3, baths: 2, size: '1,740 sq ft', status: 'Ready to move', facing: 'East facing', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=78', description: 'A practical family apartment with warm finishes, efficient storage and quick access to major work hubs.' },
@@ -18,7 +24,7 @@ const properties = [
   { id: 7, city: 'Pune', area: 'Koregaon Park', name: 'The Quiet Palm', type: 'Villa', price: '₹2.8 Cr', priceValue: 2.8, beds: 3, baths: 3, size: '2,460 sq ft', status: 'Owner listed', facing: 'South facing', image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=78', description: 'A leafy city retreat with an open kitchen, shaded patio and walkable access to the neighbourhood high street.' },
   { id: 8, city: 'Hyderabad', area: 'Jubilee Hills', name: 'Terra House', type: 'Villa', price: '₹5.5 Cr', priceValue: 5.5, beds: 4, baths: 5, size: '3,850 sq ft', status: 'Private viewing', facing: 'Hill view', image: 'https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=78', description: 'A generous hillside home balancing natural stone, planted terraces and distinct spaces for work and family life.' },
   { id: 9, city: 'Goa', area: 'Assagao', name: 'Casa Verde', type: 'Holiday home', price: '₹4.2 Cr', priceValue: 4.2, beds: 4, baths: 4, size: '3,300 sq ft', status: 'Ready to move', facing: 'Forest view', image: 'https://images.unsplash.com/photo-1600607688066-890987f18a86?auto=format&fit=crop&w=1200&q=78', description: 'A private holiday home with a shaded pool court, mature landscape and flexible rental-ready guest rooms.' },
-]
+].map((property, index) => ({ ...property, panorama: panoramaSources(panoramaSlugs[index]) }))
 
 const cities = ['Mumbai', 'Bengaluru', 'Delhi', 'Gurugram', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Goa']
 const types = ['Any type', 'Apartment', 'Villa', 'Penthouse', 'Holiday home']
@@ -97,7 +103,7 @@ function About() {
 
 function PropertyCard({ property, index, saved, onSave, onOpen }) {
   return <motion.article layout className="property-card" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: .55, delay: (index % 3) * .07, ease: easing }}>
-    <motion.div className="property-image" whileHover={{ y: -4 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}><img src={property.image} alt={`${property.name} in ${property.area}`} loading="lazy" width="760" height="560" /><span className="property-type glass">{property.type}</span><motion.button whileTap={{ scale: .82 }} className={saved ? 'saved' : ''} onClick={() => onSave(property.id)} aria-label={`${saved ? 'Remove' : 'Save'} ${property.name}`}><Heart size={17} fill={saved ? 'currentColor' : 'none'} /></motion.button><button className="view-property" onClick={() => onOpen(property)}>View details <ArrowRight size={15} /></button></motion.div>
+    <motion.div className="property-image" whileHover={{ y: -4 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}><img src={property.image} alt={`${property.name} in ${property.area}`} loading="lazy" width="760" height="560" /><span className="property-type glass">{property.type}</span><span className="property-tour-badge"><Rotate3D size={13} /> 360° tour</span><motion.button whileTap={{ scale: .82 }} className={saved ? 'saved' : ''} onClick={() => onSave(property.id)} aria-label={`${saved ? 'Remove' : 'Save'} ${property.name}`}><Heart size={17} fill={saved ? 'currentColor' : 'none'} /></motion.button><button className="view-property" onClick={() => onOpen(property)}>View details <ArrowRight size={15} /></button></motion.div>
     <div className="property-info"><div><span>{property.area}, {property.city}</span><h3>{property.name}</h3></div><strong>{property.price}</strong></div>
     <div className="property-meta"><span><BedDouble size={15} /> {property.beds} beds</span><span><Bath size={15} /> {property.baths} baths</span><span><Ruler size={15} /> {property.size}</span></div>
   </motion.article>
@@ -106,6 +112,11 @@ function PropertyCard({ property, index, saved, onSave, onOpen }) {
 function PanoramaViewer({ src, name }) {
   const viewerRef = useRef(null)
   const [status, setStatus] = useState('loading')
+  const [viewerOptions] = useState(() => {
+    const memory = typeof navigator !== 'undefined' ? navigator.deviceMemory : undefined
+    const lightweight = window.matchMedia('(max-width: 900px)').matches || (memory && memory <= 4)
+    return { panorama: typeof src === 'string' ? src : lightweight ? src.mobile : src.desktop, lightweight }
+  })
 
   useEffect(() => {
     let disposed = false
@@ -116,20 +127,21 @@ function PanoramaViewer({ src, name }) {
       if (disposed || !viewerRef.current) return
       viewer = new Viewer({
         container: viewerRef.current,
-        panorama: src,
+        panorama: viewerOptions.panorama,
         navbar: ['zoom', 'move', 'fullscreen'],
         defaultZoomLvl: 28,
         mousewheelCtrlKey: true,
         touchmoveTwoFingers: false,
+        rendererParameters: { antialias: !viewerOptions.lightweight, powerPreference: viewerOptions.lightweight ? 'low-power' : 'high-performance' },
         lang: { loading: 'Preparing your 360° tour…' },
       })
       viewer.addEventListener('ready', () => !disposed && setStatus('ready'), { once: true })
     }).catch(() => !disposed && setStatus('error'))
 
     return () => { disposed = true; viewer?.destroy() }
-  }, [src])
+  }, [viewerOptions])
 
-  return <div className="panorama-shell" aria-label={`Interactive 360 degree tour of ${name}`}>
+  return <div className="panorama-shell" role="region" aria-label={`Interactive 360 degree tour of ${name}`}>
     <div className="panorama-viewer" ref={viewerRef} />
     <AnimatePresence>{status === 'loading' && <motion.div className="panorama-loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.span animate={{ rotate: 360 }} transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}><Rotate3D /></motion.span><strong>Preparing 360° tour</strong><small>Loading the full room view…</small></motion.div>}</AnimatePresence>
     {status === 'error' && <div className="panorama-loading panorama-error"><strong>Tour could not load</strong><small>Please try again on a WebGL-enabled browser.</small></div>}
