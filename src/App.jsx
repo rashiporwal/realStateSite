@@ -78,7 +78,7 @@ function Hero({ onSearch }) {
       <div className="trust-line"><span><Check size={14} /> Detailed property intake</span><span><Check size={14} /> Human follow-up</span><span><Check size={14} /> No pressure</span></div>
     </motion.div>
     <motion.div className="hero-visual" initial={reduce ? false : { clipPath: 'inset(0 0 100% 0)', opacity: .7 }} animate={{ clipPath: 'inset(0 0 0% 0)', opacity: 1 }} transition={{ duration: 1.05, ease: easing }}>
-      <motion.img initial={reduce ? false : { scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 1.5, ease: easing }} src="/hero-home.jpg" width="1880" height="840" alt="Contemporary home with warm stone, timber screens and a reflecting pool" fetchPriority="high" />
+      <motion.img initial={reduce ? false : { scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 1.5, ease: easing }} src={`${import.meta.env.BASE_URL}hero-home.jpg`} width="1880" height="840" alt="Contemporary home with warm stone, timber screens and a reflecting pool" fetchPriority="high" />
       <motion.div className="floating-card glass" initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .65, duration: .6 }}><span>Featured concept home</span><strong>Aranya House</strong><small>Alibaug · Maharashtra</small><a href="#near-you" aria-label="See property collection"><ArrowDownRight size={20} /></a></motion.div>
       <div className="scroll-cue"><span>Scroll to discover</span><div /></div>
     </motion.div>
